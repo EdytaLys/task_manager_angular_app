@@ -1,0 +1,1 @@
+export const MESSAGE_DISMISS_TIMEOUT = 5000;

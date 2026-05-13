@@ -1,0 +1,41 @@
+<div class="empty-state" *ngIf="tasks.length === 0">
+  <p>No tasks yet. Create your first task!</p>
+</div>
+
+<div class="task-list-container" *ngIf="tasks.length > 0">
+  <div class="task-controls">
+    <div class="filter-group">
+      <label for="filter">Filter by title:</label>
+      <input
+        type="text"
+        id="filter"
+        [(ngModel)]="filterText"
+        (ngModelChange)="updateFilteredTasks()"
+        placeholder="Search tasks..."
+        class="filter-input"
+      />
+    </div>
+    <div class="sort-group">
+      <label for="sort">Sort by:</label>
+      <select id="sort" [(ngModel)]="sortBy" (ngModelChange)="updateFilteredTasks()" class="sort-select">
+        <option value="createdAt">Created Date</option>
+        <option value="status">Status</option>
+        <option value="dueDate">Due Date</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredTasks.length === 0">
+    <p>No tasks match your filter.</p>
+  </div>
+
+  <div class="task-list" *ngIf="filteredTasks.length > 0">
+    <app-task-item
+      *ngFor="let task of filteredTasks"
+      [task]="task"
+      (edit)="edit.emit($event)"
+      (delete)="delete.emit($event)"
+      (showDetails)="showDetails.emit($event)"
+    ></app-task-item>
+  </div>
+</div>
