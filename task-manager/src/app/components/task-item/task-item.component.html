@@ -1,0 +1,22 @@
+<div
+  *ngIf="task.id"
+  class="task-item"
+  [class.completed]="task.status === 'DONE'"
+  (click)="showDetails.emit(task)"
+>
+  <div class="task-content">
+    <h3 class="task-title">{{ task.title }}</h3>
+    <p *ngIf="task.description" class="task-description">{{ task.description }}</p>
+    <div class="task-meta">
+      <span class="task-status" [ngClass]="getStatusClass(task.status)">
+        {{ getStatusLabel(task.status) }}
+      </span>
+      <span *ngIf="task.dueDate" class="task-due-date">Due: {{ formatDate(task.dueDate) }}</span>
+      <span *ngIf="task.createdAt" class="task-date">Created: {{ task.createdAt | date:'medium' }}</span>
+    </div>
+  </div>
+  <div class="task-actions">
+    <button (click)="onEdit($event)" class="btn btn-edit">Edit</button>
+    <button (click)="onDelete($event)" class="btn btn-delete">Delete</button>
+  </div>
+</div>

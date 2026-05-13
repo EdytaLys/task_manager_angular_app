@@ -1,0 +1,38 @@
+<div class="kanban-board">
+  <div
+    *ngFor="let col of columns"
+    class="kanban-column"
+    [class.drag-active]="draggedTask"
+    (dragover)="onDragOver($event)"
+    (drop)="onDrop(col.status)"
+  >
+    <div class="kanban-column-header" [style.border-top-color]="col.color">
+      <h3>{{ col.label }}</h3>
+      <span class="task-count">{{ getTasksByStatus(col.status).length }}</span>
+    </div>
+    <div class="kanban-column-content">
+      <div
+        *ngFor="let task of getTasksByStatus(col.status)"
+        class="kanban-task-card"
+        draggable="true"
+        (dragstart)="onDragStart(task)"
+        (click)="showDetails.emit(task)"
+      >
+        <div class="kanban-task-header">
+          <h4>{{ task.title }}</h4>
+        </div>
+        <p *ngIf="task.description" class="kanban-task-description">{{ task.description }}</p>
+        <div class="kanban-task-meta" *ngIf="task.dueDate">
+          <span class="task-due-date">📅 {{ formatDate(task.dueDate) }}</span>
+        </div>
+        <div class="kanban-task-actions">
+          <button (click)="onEdit($event, task)" class="btn-edit-small">Edit</button>
+          <button *ngIf="task.id != null" (click)="onDelete($event, task)" class="btn-delete-small">Delete</button>
+        </div>
+      </div>
+      <div *ngIf="getTasksByStatus(col.status).length === 0" class="kanban-empty-state">
+        Drop tasks here
+      </div>
+    </div>
+  </div>
+</div>

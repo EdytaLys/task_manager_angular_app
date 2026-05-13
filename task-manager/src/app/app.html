@@ -1,0 +1,65 @@
+<div class="app">
+  <header class="app-header">
+    <h1>Task Manager</h1>
+    <p>Manage your tasks efficiently</p>
+  </header>
+  <main class="app-main">
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+      <button (click)="error = null" class="close-btn">×</button>
+    </div>
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+      <button (click)="successMessage = null" class="close-btn">×</button>
+    </div>
+    <div class="content-wrapper">
+      <section class="list-section full-width">
+        <div class="list-header">
+          <h2>Tasks ({{ tasks.length }})</h2>
+          <div class="header-actions">
+            <button (click)="openCreateModal()" class="btn btn-primary">+ Create Task</button>
+            <div class="view-toggle">
+              <button class="toggle-btn" [class.active]="viewMode === 'list'" (click)="viewMode = 'list'">List View</button>
+              <button class="toggle-btn" [class.active]="viewMode === 'kanban'" (click)="viewMode = 'kanban'">Kanban View</button>
+            </div>
+            <button (click)="loadTasks()" class="btn btn-refresh" [disabled]="loading">
+              {{ loading ? 'Loading...' : 'Refresh' }}
+            </button>
+          </div>
+        </div>
+
+        <app-task-list
+          *ngIf="viewMode === 'list'"
+          [tasks]="tasks"
+          (edit)="openEditModal($event)"
+          (delete)="handleDeleteTask($event)"
+          (showDetails)="selectedTask = $event"
+        ></app-task-list>
+
+        <app-kanban-board
+          *ngIf="viewMode === 'kanban'"
+          [tasks]="tasks"
+          (edit)="openEditModal($event)"
+          (delete)="handleDeleteTask($event)"
+          (statusChange)="handleStatusChange($event)"
+          (showDetails)="selectedTask = $event"
+        ></app-kanban-board>
+      </section>
+    </div>
+  </main>
+
+  <app-task-details-modal
+    *ngIf="selectedTask"
+    [task]="selectedTask"
+    (closed)="selectedTask = null"
+    (edit)="openEditModal($event)"
+    (delete)="handleDeleteTask($event)"
+  ></app-task-details-modal>
+
+  <app-task-form-modal
+    [isOpen]="isFormModalOpen"
+    [initialTask]="editingTask || undefined"
+    (closed)="closeFormModal()"
+    (submitted)="handleFormSubmit($event)"
+  ></app-task-form-modal>
+</div>

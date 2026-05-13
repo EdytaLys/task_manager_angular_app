@@ -1,0 +1,15 @@
+<div *ngIf="isOpen" class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-content task-form-modal">
+    <div class="modal-header">
+      <h2>{{ initialTask ? 'Edit Task' : 'Create New Task' }}</h2>
+      <button class="modal-close-btn" (click)="closed.emit()">×</button>
+    </div>
+    <div class="modal-body">
+      <app-task-form
+        [initialTask]="initialTask"
+        (submitted)="onSubmit($event)"
+        (cancelled)="closed.emit()"
+      ></app-task-form>
+    </div>
+  </div>
+</div>
