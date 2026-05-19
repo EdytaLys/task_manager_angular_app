@@ -14,16 +14,25 @@
       <div
         *ngFor="let task of getTasksByStatus(col.status)"
         class="kanban-task-card"
+        [appHighlightPriority]="task.priority"
         draggable="true"
         (dragstart)="onDragStart(task)"
         (click)="showDetails.emit(task)"
       >
         <div class="kanban-task-header">
           <h4>{{ task.title }}</h4>
+          <span [ngClass]="getPriorityClass(task.priority)" class="task-priority task-priority--small">
+            {{ task.priority | statusLabel:'priority' }}
+          </span>
         </div>
         <p *ngIf="task.description" class="kanban-task-description">{{ task.description }}</p>
+        <div class="kanban-task-tags" *ngIf="task.tags?.length">
+          <span *ngFor="let tag of task.tags" class="tag-chip tag-chip--small">{{ tag }}</span>
+        </div>
         <div class="kanban-task-meta" *ngIf="task.dueDate">
-          <span class="task-due-date">📅 {{ formatDate(task.dueDate) }}</span>
+          <span class="task-due-date" [class.overdue-text]="isOverdue(task)">
+            {{ isOverdue(task) ? '⚠' : '📅' }} {{ formatDate(task.dueDate) }}
+          </span>
         </div>
         <div class="kanban-task-actions">
           <button (click)="onEdit($event, task)" class="btn-edit-small">Edit</button>

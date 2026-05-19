@@ -1,67 +1,91 @@
-<form (ngSubmit)="onSubmit()" class="task-form">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="task-form">
   <div class="form-group">
     <label for="title">
       Title *
-      <span [class.over-limit]="title.length > 100" class="character-count">
-        {{ title.length }}/100 characters
+      <span [class.over-limit]="title.value?.length > 100" class="character-count">
+        {{ title.value?.length ?? 0 }}/100
       </span>
     </label>
     <input
       type="text"
       id="title"
-      [value]="title"
-      (input)="onTitleChange($any($event.target).value)"
-      (blur)="onBlur('title')"
+      formControlName="title"
       placeholder="Enter task title"
-      [class.error]="errors.title && touched['title']"
+      appAutofocus
+      [class.error]="title.invalid && title.touched"
     />
-    <span *ngIf="errors.title && touched['title']" class="error-message">{{ errors.title }}</span>
+    <span *ngIf="title.touched && title.errors?.['required']" class="error-message">Title is required</span>
+    <span *ngIf="title.touched && title.errors?.['maxLengthTrimmed']" class="error-message">Title must not exceed 100 characters</span>
   </div>
 
   <div class="form-group">
     <label for="description">
       Description
-      <span [class.over-limit]="description.length > 500" class="character-count">
-        {{ description.length }}/500 characters
+      <span [class.over-limit]="description.value?.length > 500" class="character-count">
+        {{ description.value?.length ?? 0 }}/500
       </span>
     </label>
     <textarea
       id="description"
-      [value]="description"
-      (input)="onDescriptionChange($any($event.target).value)"
-      (blur)="onBlur('description')"
+      formControlName="description"
       placeholder="Enter task description"
       rows="3"
-      [class.error]="errors.description"
+      [class.error]="description.invalid && description.touched"
     ></textarea>
-    <span *ngIf="errors.description" class="error-message">{{ errors.description }}</span>
+    <span *ngIf="description.touched && description.errors?.['maxLengthTrimmed']" class="error-message">
+      Description must not exceed 500 characters
+    </span>
   </div>
 
-  <div class="form-group">
-    <label for="status">Status *</label>
-    <select
-      id="status"
-      [(ngModel)]="status"
-      name="status"
-      (blur)="onBlur('status')"
-      [class.error]="errors.status && touched['status']"
-    >
-      <option value="TODO">To Do</option>
-      <option value="IN_PROGRESS">In Progress</option>
-      <option value="DONE">Done</option>
-    </select>
-    <span *ngIf="errors.status && touched['status']" class="error-message">{{ errors.status }}</span>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="status">Status *</label>
+      <select id="status" formControlName="status" [class.error]="status.invalid && status.touched">
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+      <span *ngIf="status.touched && status.errors?.['required']" class="error-message">Status is required</span>
+    </div>
+
+    <div class="form-group">
+      <label for="priority">Priority *</label>
+      <select id="priority" formControlName="priority" [class.error]="priority.invalid && priority.touched">
+        <option *ngFor="let opt of priorityOptions" [value]="opt.value">{{ opt.label }}</option>
+      </select>
+      <span *ngIf="priority.touched && priority.errors?.['required']" class="error-message">Priority is required</span>
+    </div>
   </div>
 
   <div class="form-group">
     <label for="dueDate">Due Date</label>
-    <input
-      type="date"
-      id="dueDate"
-      [(ngModel)]="dueDate"
-      name="dueDate"
-      [min]="todayStr"
-    />
+    <input type="date" id="dueDate" formControlName="dueDate" [min]="todayStr" />
+  </div>
+
+  <!-- Tags -->
+  <div class="form-group">
+    <label>Tags <span class="character-count">{{ tags.length }}/{{ maxTags }}</span></label>
+    <div class="tags-input-row">
+      <input
+        type="text"
+        [(ngModel)]="newTagInput"
+        [ngModelOptions]="{ standalone: true }"
+        (keydown)="onTagInputKeydown($event)"
+        placeholder="Add a tag and press Enter"
+        class="tag-input"
+        [disabled]="tags.length >= maxTags"
+      />
+      <button type="button" class="btn btn-secondary btn-small" (click)="addTag()" [disabled]="tags.length >= maxTags">
+        Add
+      </button>
+    </div>
+    <span *ngIf="tagError" class="error-message" style="position:static">{{ tagError }}</span>
+    <div class="tags-list" *ngIf="tags.length > 0">
+      <span *ngFor="let tag of tags.controls; let i = index" class="tag-chip tag-chip--removable">
+        {{ tag.value }}
+        <button type="button" class="tag-remove-btn" (click)="removeTag(i)">×</button>
+      </span>
+    </div>
   </div>
 
   <div class="form-actions">

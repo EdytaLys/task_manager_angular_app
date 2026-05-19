@@ -1,0 +1,100 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h2>Dashboard</h2>
+    <a routerLink="/tasks" class="btn btn-primary">Go to Tasks</a>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">Loading statistics...</div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Summary cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-value">{{ totalCount() }}</span>
+        <span class="stat-label">Total Tasks</span>
+      </div>
+      <div class="stat-card stat-card--todo">
+        <span class="stat-value">{{ byStatus().TODO }}</span>
+        <span class="stat-label">To Do</span>
+      </div>
+      <div class="stat-card stat-card--progress">
+        <span class="stat-value">{{ byStatus().IN_PROGRESS }}</span>
+        <span class="stat-label">In Progress</span>
+      </div>
+      <div class="stat-card stat-card--done">
+        <span class="stat-value">{{ byStatus().DONE }}</span>
+        <span class="stat-label">Done</span>
+      </div>
+    </div>
+
+    <!-- Completion rate -->
+    <div class="dashboard-section">
+      <h3>Completion Rate</h3>
+      <div class="progress-bar-container">
+        <div class="progress-bar" [style.width.%]="completionRate()"></div>
+      </div>
+      <span class="progress-label">{{ completionRate() }}% complete</span>
+    </div>
+
+    <!-- Priority breakdown -->
+    <div class="dashboard-section">
+      <h3>By Priority</h3>
+      <div class="priority-breakdown">
+        <div class="priority-row">
+          <span class="task-priority priority-high">High</span>
+          <div class="priority-bar-track">
+            <div class="priority-bar priority-bar--high"
+              [style.width.%]="totalCount() ? (byPriority().HIGH / totalCount()) * 100 : 0">
+            </div>
+          </div>
+          <span class="priority-count">{{ byPriority().HIGH }}</span>
+        </div>
+        <div class="priority-row">
+          <span class="task-priority priority-medium">Medium</span>
+          <div class="priority-bar-track">
+            <div class="priority-bar priority-bar--medium"
+              [style.width.%]="totalCount() ? (byPriority().MEDIUM / totalCount()) * 100 : 0">
+            </div>
+          </div>
+          <span class="priority-count">{{ byPriority().MEDIUM }}</span>
+        </div>
+        <div class="priority-row">
+          <span class="task-priority priority-low">Low</span>
+          <div class="priority-bar-track">
+            <div class="priority-bar priority-bar--low"
+              [style.width.%]="totalCount() ? (byPriority().LOW / totalCount()) * 100 : 0">
+            </div>
+          </div>
+          <span class="priority-count">{{ byPriority().LOW }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue tasks -->
+    <div class="dashboard-section" *ngIf="overdueTasks().length > 0">
+      <h3>Overdue Tasks <span class="overdue-badge">{{ overdueTasks().length }}</span></h3>
+      <ul class="overdue-list">
+        <li *ngFor="let task of overdueTasks()" class="overdue-item">
+          <span class="overdue-title">{{ task.title }}</span>
+          <span [ngClass]="getPriorityClass(task.priority)" class="task-priority">
+            {{ task.priority | statusLabel:'priority' }}
+          </span>
+          <span class="overdue-date">Due: {{ formatDate(task.dueDate) }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Tags cloud -->
+    <div class="dashboard-section" *ngIf="allTags().length > 0">
+      <h3>Tags</h3>
+      <div class="tags-cloud">
+        <span *ngFor="let tag of allTags()" class="tag-chip">{{ tag }}</span>
+      </div>
+    </div>
+
+    <div class="dashboard-empty" *ngIf="totalCount() === 0">
+      <p>No tasks yet.</p>
+      <a routerLink="/tasks" class="btn btn-primary">Create your first task</a>
+    </div>
+  </ng-container>
+</div>

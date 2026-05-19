@@ -1,0 +1,62 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <h2>Settings</h2>
+    <p class="settings-subtitle">Manage your application preferences</p>
+  </div>
+
+  <div class="settings-form">
+    <div class="settings-section">
+      <h3>Display</h3>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <label class="setting-label">Default View</label>
+          <span class="setting-description">Choose how tasks are displayed by default</span>
+        </div>
+        <div class="setting-control">
+          <select [value]="viewMode()" (change)="onViewModeChange($any($event.target).value)" class="settings-select">
+            <option value="kanban">Kanban Board</option>
+            <option value="list">List View</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <label class="setting-label">Theme</label>
+          <span class="setting-description">Select the application color theme</span>
+        </div>
+        <div class="setting-control">
+          <select [value]="theme()" (change)="onThemeChange($any($event.target).value)" class="settings-select">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Task Defaults</h3>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <label class="setting-label">Default Priority</label>
+          <span class="setting-description">Priority assigned to new tasks</span>
+        </div>
+        <div class="setting-control">
+          <select [value]="defaultPriority()" (change)="onDefaultPriorityChange($any($event.target).value)" class="settings-select">
+            <option *ngFor="let opt of priorityOptions" [value]="opt.value">{{ opt.label }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-actions">
+      <div *ngIf="saved" class="save-confirmation">Settings saved!</div>
+      <button type="button" class="btn btn-secondary" (click)="resetToDefaults()">Reset to Defaults</button>
+      <button type="button" class="btn btn-primary" (click)="saveSettings()" [disabled]="!hasUnsavedChanges()">
+        Save Settings
+      </button>
+    </div>
+  </div>
+</div>
