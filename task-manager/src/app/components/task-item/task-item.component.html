@@ -2,17 +2,29 @@
   *ngIf="task.id"
   class="task-item"
   [class.completed]="task.status === 'DONE'"
+  [class.overdue]="isOverdue()"
+  [appHighlightPriority]="task.priority"
   (click)="showDetails.emit(task)"
 >
   <div class="task-content">
-    <h3 class="task-title">{{ task.title }}</h3>
+    <div class="task-title-row">
+      <h3 class="task-title">{{ task.title }}</h3>
+      <span [ngClass]="getPriorityClass(task.priority)" class="task-priority">
+        {{ task.priority | statusLabel:'priority' }}
+      </span>
+    </div>
     <p *ngIf="task.description" class="task-description">{{ task.description }}</p>
     <div class="task-meta">
       <span class="task-status" [ngClass]="getStatusClass(task.status)">
-        {{ getStatusLabel(task.status) }}
+        {{ task.status | statusLabel }}
       </span>
-      <span *ngIf="task.dueDate" class="task-due-date">Due: {{ formatDate(task.dueDate) }}</span>
-      <span *ngIf="task.createdAt" class="task-date">Created: {{ task.createdAt | date:'medium' }}</span>
+      <span *ngIf="task.dueDate" class="task-due-date" [class.overdue-text]="isOverdue()">
+        Due: {{ formatDate(task.dueDate) }}
+      </span>
+      <span *ngIf="task.createdAt" class="task-date">Created: {{ task.createdAt | date:'mediumDate' }}</span>
+    </div>
+    <div class="task-tags" *ngIf="task.tags?.length">
+      <span *ngFor="let tag of task.tags" class="tag-chip">{{ tag }}</span>
     </div>
   </div>
   <div class="task-actions">

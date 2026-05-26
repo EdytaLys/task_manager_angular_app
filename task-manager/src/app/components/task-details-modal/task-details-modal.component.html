@@ -19,7 +19,21 @@
       </div>
       <div class="detail-row">
         <span class="detail-label">Status:</span>
-        <span class="detail-value task-status" [ngClass]="getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span>
+        <span class="detail-value task-status" [ngClass]="getStatusClass(task.status)">
+          {{ task.status | statusLabel }}
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Priority:</span>
+        <span class="detail-value task-priority" [ngClass]="getPriorityClass(task.priority)">
+          {{ task.priority | statusLabel:'priority' }}
+        </span>
+      </div>
+      <div class="detail-row" *ngIf="task.tags?.length">
+        <span class="detail-label">Tags:</span>
+        <div class="detail-value tags-list">
+          <span *ngFor="let tag of task.tags" class="tag-chip">{{ tag }}</span>
+        </div>
       </div>
       <div class="detail-row">
         <span class="detail-label">Due Date:</span>

@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Task } from '../../models/task.model';
-import { getStatusLabel, getStatusClass } from '../../utils/status-helpers';
+import { getStatusClass, getPriorityClass } from '../../utils/status-helpers';
+import { StatusLabelPipe } from '../../pipes/status-label.pipe';
 
 @Component({
   selector: 'app-task-details-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StatusLabelPipe],
   templateUrl: './task-details-modal.component.html',
 })
 export class TaskDetailsModalComponent {
@@ -15,8 +16,8 @@ export class TaskDetailsModalComponent {
   @Output() edit = new EventEmitter<Task>();
   @Output() delete = new EventEmitter<number>();
 
-  getStatusLabel = getStatusLabel;
   getStatusClass = getStatusClass;
+  getPriorityClass = getPriorityClass;
 
   formatDate(dateString?: string): string {
     if (!dateString) return 'Not set';
@@ -28,16 +29,16 @@ export class TaskDetailsModalComponent {
     return new Date(dateString).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
 
-  onBackdropClick(event: MouseEvent) {
+  onBackdropClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) this.closed.emit();
   }
 
-  onEdit() {
+  onEdit(): void {
     this.edit.emit(this.task);
     this.closed.emit();
   }
 
-  onDelete() {
+  onDelete(): void {
     if (this.task.id === undefined) return;
     this.delete.emit(this.task.id);
     this.closed.emit();

@@ -5,37 +5,67 @@
 <div class="task-list-container" *ngIf="tasks.length > 0">
   <div class="task-controls">
     <div class="filter-group">
-      <label for="filter">Filter by title:</label>
+      <label for="filter">Search:</label>
       <input
         type="text"
         id="filter"
-        [(ngModel)]="filterText"
-        (ngModelChange)="updateFilteredTasks()"
-        placeholder="Search tasks..."
+        [(ngModel)]="filters.text"
+        placeholder="Title, description or tag..."
         class="filter-input"
       />
     </div>
+
+    <div class="filter-group">
+      <label for="statusFilter">Status:</label>
+      <select id="statusFilter" [value]="filters.status" (change)="onStatusFilterChange($any($event.target).value)" class="sort-select">
+        <option value="ALL">All</option>
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="priorityFilter">Priority:</label>
+      <select id="priorityFilter" [value]="filters.priority" (change)="onPriorityFilterChange($any($event.target).value)" class="sort-select">
+        <option value="ALL">All</option>
+        <option *ngFor="let opt of priorityOptions" [value]="opt.value">{{ opt.label }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group" *ngIf="allTags.length > 0">
+      <label for="tagFilter">Tag:</label>
+      <select id="tagFilter" [(ngModel)]="filters.tag" class="sort-select">
+        <option value="">All</option>
+        <option *ngFor="let tag of allTags" [value]="tag">{{ tag }}</option>
+      </select>
+    </div>
+
     <div class="sort-group">
       <label for="sort">Sort by:</label>
-      <select id="sort" [(ngModel)]="sortBy" (ngModelChange)="updateFilteredTasks()" class="sort-select">
+      <select id="sort" [(ngModel)]="filters.sortBy" class="sort-select">
         <option value="createdAt">Created Date</option>
+        <option value="priority">Priority</option>
         <option value="status">Status</option>
         <option value="dueDate">Due Date</option>
       </select>
     </div>
+
+    <button type="button" class="btn btn-secondary btn-small" (click)="clearFilters()">Clear</button>
   </div>
 
-  <div class="empty-state" *ngIf="filteredTasks.length === 0">
-    <p>No tasks match your filter.</p>
-  </div>
-
-  <div class="task-list" *ngIf="filteredTasks.length > 0">
-    <app-task-item
-      *ngFor="let task of filteredTasks"
-      [task]="task"
-      (edit)="edit.emit($event)"
-      (delete)="delete.emit($event)"
-      (showDetails)="showDetails.emit($event)"
-    ></app-task-item>
-  </div>
+  <ng-container *ngIf="tasks | taskFilter:filters as filtered">
+    <div class="empty-state" *ngIf="filtered.length === 0">
+      <p>No tasks match your filters.</p>
+    </div>
+    <div class="task-list" *ngIf="filtered.length > 0">
+      <app-task-item
+        *ngFor="let task of filtered"
+        [task]="task"
+        (edit)="edit.emit($event)"
+        (delete)="delete.emit($event)"
+        (showDetails)="showDetails.emit($event)"
+      ></app-task-item>
+    </div>
+  </ng-container>
 </div>
